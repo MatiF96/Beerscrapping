@@ -11,7 +11,7 @@ driver.get(url)
 time.sleep(1)
 
 soup = BeautifulSoup(driver.page_source)
-dane = []
+data = []
 namesstyles = []
 names = []
 styles = []
@@ -19,7 +19,7 @@ breweries = []
 
 table = soup.findAll("td")
 for i in table:
-    dane.append(i.get_text())
+    data.append(i.get_text())
     j=0
     k=0
     for span in i.findAll("a"):
