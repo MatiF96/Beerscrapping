@@ -11,29 +11,32 @@ driver.get(url)
 time.sleep(1)
 
 soup = BeautifulSoup(driver.page_source)
+
 data = []
-namesstyles = []
 names = []
 styles = []
 breweries = []
 
 table = soup.findAll("td")
+j=0
 for i in table:
     data.append(i.get_text())
-    j=0
-    k=0
     for span in i.findAll("a"):
-        if j%2 == 0:
-            if k%2 == 0:
-                print(k)
-                k+=1
-            else:
-                print(k)
-                k+=1
+        if j%3 == 0:
+            styles.append(span.get_text())
             j+=1
-        else:
+        elif j%3 == 1:
+            names.append(span.get_text())
+            j+=1
+        elif j%3 == 2:
             breweries.append(span.get_text())
             j+=1
+        else:
+            break
+
+del names[0]
+del breweries[0]
+del styles[0:2]
 
 """
 page = requests.get("https://www.ratebeer.com/user/421236/beer-ratings")
