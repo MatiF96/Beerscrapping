@@ -12,25 +12,37 @@ time.sleep(1)
 
 soup = BeautifulSoup(driver.page_source)
 
-data = []
 names = []
 styles = []
 breweries = []
+meanScores = []
+myScores = []
+dates = []
 
-table = soup.findAll("td")
-j=0
-for i in table:
-    data.append(i.get_text())
+j, k = 0, 0
+for num in soup.findAll("td", class_="hidden-xs hidden-sm"):
+    if j%3 == 1:
+        meanScores.append(num.get_text())
+        j+=1
+    elif j%3 == 2:
+        dates.append(num.get_text()[:-1])
+        j+=1
+    else:
+        j+=1
+
+for i in soup.findAll("td"):
+    for my in i.findAll("b"):
+        myScores.append(my.get_text())
     for span in i.findAll("a"):
-        if j%3 == 0:
+        if k%3 == 0:
             styles.append(span.get_text())
-            j+=1
-        elif j%3 == 1:
+            k+=1
+        elif k%3 == 1:
             names.append(span.get_text())
-            j+=1
-        elif j%3 == 2:
+            k+=1
+        elif k%3 == 2:
             breweries.append(span.get_text())
-            j+=1
+            k+=1
         else:
             break
 
@@ -38,6 +50,7 @@ del names[0]
 del breweries[0]
 del styles[0:2]
 
+print(dates)
 """
 page = requests.get("https://www.ratebeer.com/user/421236/beer-ratings")
 #page = requests.get("https://www.ratebeer.com/top")
