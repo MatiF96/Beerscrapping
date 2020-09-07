@@ -1,8 +1,8 @@
 # Beerscrapping
 
-Python script getting list of rated beers with all information from Ratebeer.com. 
-Script uses Selenium and Beatiful Soup to scrape data from your Ratebeer profile, process it and save to MS Excel format.
+Python script bringing out the list of rated beers with all information from Ratebeer.com. 
+Script uses Selenium and Beautiful Soup to scrape data from your Ratebeer profile, process it and save to MS Excel format.
 
-All you need is to paste link to your Ratebeer profile.
+Check the code. Paste link to your Ratebeer profile and that's it.
 
 Enjoy/Cheers!
