@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time, math
 from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
 
 names = []
 styles = []
@@ -24,11 +25,13 @@ pages = int(math.ceil(ratings/50))
 
 
 for currentPage in range(pages):
-    url = 'https://www.ratebeer.com/user/421236/beer-ratings/'+str(currentPage+1)+'/'
-    driver.get(url)
+    
+    currentUrl = url+str(currentPage+1)+'/'
+    driver.get(currentUrl)
     time.sleep(1)
     soup = BeautifulSoup(driver.page_source)
-    j, k = 0, 0
+    j = 0
+    k = 0
     firstName, firstBrewery = True, True
     for num in soup.findAll("td", class_="hidden-xs hidden-sm"):
         if j%3 == 1:
@@ -62,43 +65,13 @@ for currentPage in range(pages):
             else:
                 k+=1
 
-"""
-page = requests.get("https://www.ratebeer.com/user/421236/beer-ratings")
-#page = requests.get("https://www.ratebeer.com/top")
-soup = BeautifulSoup(page.content, 'html.parser')
+export = {'Name': names,
+        'Brewery': breweries,
+        'Style': styles,
+        'My score': myScores,
+        'Avg score': meanScores,
+        'Date': dates
+        }
 
-dane = []
-names = []
-styles = []
-
-table = soup.findAll("td")
-for i in table:
-    dane.append(i.get_text())
-    j=0
-    for span in i.findAll("a"):
-        if j%2 == 0:
-            names.append(span.get_text())
-            j+=1
-        else:
-            styles.append(span.get_text())
-            j+=1
-
-positions = dane[0::6]
-abvs_p = dane[3::6]
-abvs = [s.replace('%', '') for s in abvs_p]
-scores = dane[4::6]
-
-to_save = []
-b=0
-for a in positions:
-    to_save.append({
-     "Position": positions[b],
-     "Name": names[b],
-     "Style": styles[b],
-     "ABV": abvs[b],
-     "Score": scores[b]
-     })
-    b+=1
-
-print (to_save)
-"""
+df = pd.DataFrame(export, columns = ['Name', 'Brewery', 'Style', 'My score', 'Avg score', 'Date'])
+df.to_excel ('Beerscrapping.xlsx', index = False, header=True)
