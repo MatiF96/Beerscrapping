@@ -1,16 +1,7 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import time
+import time, math
 from webdriver_manager.chrome import ChromeDriverManager
-
-
-url = 'https://www.ratebeer.com/user/421236/beer-ratings/1/5/'
-driver = webdriver.Chrome(ChromeDriverManager().install())
-driver.get(url)
-
-time.sleep(1)
-
-soup = BeautifulSoup(driver.page_source)
 
 names = []
 styles = []
@@ -19,38 +10,58 @@ meanScores = []
 myScores = []
 dates = []
 
-j, k = 0, 0
-for num in soup.findAll("td", class_="hidden-xs hidden-sm"):
-    if j%3 == 1:
-        meanScores.append(num.get_text())
-        j+=1
-    elif j%3 == 2:
-        dates.append(num.get_text()[:-1])
-        j+=1
-    else:
-        j+=1
+driver = webdriver.Chrome(ChromeDriverManager().install())
 
-for i in soup.findAll("td"):
-    for my in i.findAll("b"):
-        myScores.append(my.get_text())
-    for span in i.findAll("a"):
-        if k%3 == 0:
-            styles.append(span.get_text())
-            k+=1
-        elif k%3 == 1:
-            names.append(span.get_text())
-            k+=1
-        elif k%3 == 2:
-            breweries.append(span.get_text())
-            k+=1
+url = 'https://www.ratebeer.com/user/421236/beer-ratings/'
+driver.get(url)
+
+time.sleep(1)
+
+soup = BeautifulSoup(driver.page_source)
+
+ratings = int(soup.find("div", class_="stat-value", id="beer-ratings").text)
+pages = int(math.ceil(ratings/50))
+
+
+for currentPage in range(pages):
+    url = 'https://www.ratebeer.com/user/421236/beer-ratings/'+str(currentPage+1)+'/'
+    driver.get(url)
+    time.sleep(1)
+    soup = BeautifulSoup(driver.page_source)
+    j, k = 0, 0
+    firstName, firstBrewery = True, True
+    for num in soup.findAll("td", class_="hidden-xs hidden-sm"):
+        if j%3 == 1:
+            meanScores.append(num.get_text())
+            j+=1
+        elif j%3 == 2:
+            dates.append(num.get_text()[:-1])
+            j+=1
         else:
-            break
+            styles.append(num.get_text())
+            j+=1
+    
+    for i in soup.findAll("td"):
+        for my in i.findAll("b"):
+            myScores.append(my.get_text())
+        for span in i.findAll("a"):
+            if k%3 == 1:
+                if firstName:
+                    firstName = False
+                    k+=1
+                else:
+                    names.append(span.get_text())
+                    k+=1
+            elif k%3 == 2:
+                if firstBrewery:
+                    firstBrewery = False
+                    k+=1
+                else:
+                    breweries.append(span.get_text())
+                    k+=1
+            else:
+                k+=1
 
-del names[0]
-del breweries[0]
-del styles[0:2]
-
-print(dates)
 """
 page = requests.get("https://www.ratebeer.com/user/421236/beer-ratings")
 #page = requests.get("https://www.ratebeer.com/top")
