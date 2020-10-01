@@ -13,8 +13,9 @@ def passAndRun():
     else:
         try:
             scrapeAndSave(link)
-        except:
+        except Exception as e: 
             messagebox.showerror(title=None, message="Link is not correct!")
+            print(e)
             
 def paste():
     clipboard = master.clipboard_get()
@@ -43,7 +44,8 @@ def scrapeAndSave(url):
         driver.get(currentUrl)
         time.sleep(1)
         soup = BeautifulSoup(driver.page_source)
-        j, k = 0, 0
+        j = 0
+        k = 0
         firstName, firstBrewery = True, True
         for num in soup.findAll("td", class_="hidden-xs hidden-sm"):
             if j % 3 == 1:
@@ -77,7 +79,6 @@ def scrapeAndSave(url):
                     k += 1
     
     driver.quit()
-    
     export = {'Name': names,
             'Brewery': breweries,
             'Style': styles,
@@ -87,7 +88,7 @@ def scrapeAndSave(url):
             }
     
     df = pd.DataFrame(export, columns = ['Name', 'Brewery', 'Style', 'My score', 'Avg score', 'Date'])
-    df.to_excel ('Beerscrapping.xlsx', index = False, header = True)
+    df.to_excel ('Beerscrapping.xlsx', index = False, header = True, encoding= 'mac_roman')
     messagebox.showinfo(message="Done!")
 
 master = tk.Tk()
